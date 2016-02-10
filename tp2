@@ -14,7 +14,9 @@ int main()
 	int compteur = 0;
 	fstream file;
 	file.open("input.txt");
-
+	file >> mot;
+	dictionnaire.push_back(mot);
+	compressed.push_back(mot);
 	while (file >> mot)
 	{
 		cout << mot << endl;
@@ -22,6 +24,7 @@ int main()
 		{
 			if (mot == dictionnaire[i])
 			{
+				dictionnaire[i].erase();
 				dictionnaire.insert(dictionnaire.begin(), mot);
 				compressed.push_back(to_string(i));
 			}
@@ -34,6 +37,12 @@ int main()
 		}
 
 		compteur++;
+	}
+
+	for (auto i : compressed)
+	{
+		cout << i << " ";
+
 	}
 		
 	
