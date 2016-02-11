@@ -3,49 +3,88 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <ostream>
+#include <list>
 
 using namespace std;
 
+bool isNumber(string i) // check si la premiere valeur dans le string est un nombre
+{
+	if (i[0] == '0' || i[0] == '1' || i[0] == '2' || i[0] == '3' || i[0] == '4' || i[0] == '5' || i[0] == '6' || i[0] == '7' || i[0] == '8' || i[0] == '9')
+		return true;
+	else return false;
+
+}
+
 int main()
 {
+	//compression
 	string mot;
 	vector <string> dictionnaire;
 	vector <string> compressed;
 	int compteur = 0;
+
+	ofstream out;
+	out.open("compressed.txt");
 	fstream file;
 	file.open("input.txt");
 	file >> mot;
-	dictionnaire.push_back(mot);
+	dictionnaire.push_back(mot); // dictionnaire du programe
 	compressed.push_back(mot);
+	out << mot << " ";
 	while (file >> mot)
 	{
-		cout << mot << endl;
-		for (int i = 0; i < compteur; i++)
+		for (int i = 0; i < compteur;i++)
 		{
-			if (mot == dictionnaire[i])
+			
+			if (mot == dictionnaire[i]) // si mot est deja dans le dictionnaire
 			{
-				dictionnaire[i].erase();
-				dictionnaire.insert(dictionnaire.begin(), mot);
-				compressed.push_back(to_string(i));
+				dictionnaire.erase(dictionnaire.begin() + i); // enleve le mot qui est deja dans le dictionnaire
+				dictionnaire.insert(dictionnaire.begin(), mot); // insert ce mot au debut a nouveau
+				out << i << " "; // insere dans le fichier
+				
 			}
-
 		}
-		if (dictionnaire[0] != mot)
+		if (dictionnaire.front() != mot) // mot n'est pas dans le dictionaire
 		{
-			dictionnaire.push_back(mot);
-			compressed.push_back(mot);
+			dictionnaire.insert(dictionnaire.begin(), mot); // insere dans le dictionnaire
+			out << mot << " "; // insere dans le fichier
+			compteur++; // augmente compteur car nnouveau mt dans le dictionnaire
 		}
 
-		compteur++;
 	}
+	file.close();
+	out.close();
 
-	for (auto i : compressed)
+	// decompression
+	string temp;
+	vector <string> compressed2;
+	vector <string> dictionnaire2;
+	fstream file2;
+	ofstream decompressed;
+	decompressed.open("decompressed.txt");
+	file2.open("compressed.txt");
+	file2 >> mot;
+	dictionnaire2.push_back(mot);
+	decompressed << mot << " ";
+	while (file2 >> mot)
 	{
-		cout << i << " ";
+		if (isNumber(mot)) // si le string est un nombre
+		{
+			decompressed << dictionnaire2[stoi(mot)] << " "; // mettre le mot representer par se nombre dans le fichier
+			string temp= dictionnaire2[stoi(mot)]; // mettre le mot dans temp
+			dictionnaire2.erase(dictionnaire2.begin() + stoi(mot)); // enlever le mot 
+			dictionnaire2.insert(dictionnaire2.begin(), temp); // puis le mettre au debut 
+		}
+		else
+		{
+			decompressed << mot << " "; // n'est pas nombre, donc insere dans fichier
+			dictionnaire2.insert(dictionnaire2.begin(), mot); // insere le mot dans le dictionnaire au debut
+
+		}
+
 
 	}
-		
-	
 
 	return 0;
 }
